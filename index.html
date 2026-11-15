@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0c100e">
+  <meta name="description" content="Thinkut is a desktop video editor with searchable footage and an Agent that builds and revises editable sequences.">
+  <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css?v=15">
+  <script src="assets/project.js?v=14" defer></script>
+  <script src="site.js?v=14" defer></script>
+  <script src="technical.js?v=16" defer></script>
+  <script src="agent-architecture.js?v=14" defer></script>
+  <script src="agent-demo.js?v=14" defer></script>
+  <title>Thinkut — Footage search and Agent editing</title>
+</head>
+<body id="top">
+  <a href="#main" class="skip">Skip to content</a>
+  <header class="shell mast">
+    <a href="#top" class="brand"><img src="assets/mark.svg" alt="" width="28" height="28">Thinkut</a>
+    <nav aria-label="Sections"><a href="#technical">Footage</a><a href="#agent-design">Agent</a><a href="#workflow">Demo</a></nav>
+  </header>
+  <main id="main">
+    <section class="shell hero" aria-labelledby="project-title">
+      <div class="hero-copy">
+        <p class="eyebrow">DESKTOP VIDEO EDITOR</p>
+        <h1 id="project-title">Find footage and <em>edit with an Agent.</em></h1>
+        <p class="lead">Thinkut indexes what happens and what’s said in your footage. Find the right moment in a source clip, then ask the Agent to assemble or revise a sequence you can keep editing.</p>
+        <div class="hero-actions">
+          <a class="hero-primary" href="#workflow">Watch the workflow <span class="hero-duration">1:07</span></a>
+          <a href="#agent-design">How the Agent works <span aria-hidden="true">↓</span></a>
+        </div>
+      </div>
+      <figure class="hero-preview">
+        <a href="#workflow" aria-label="Watch the Morning Ritual workflow"><img src="assets/project-preview.jpg" width="1280" height="720" alt="Demo workspace showing a source clip, a program preview, an editable timeline and the Agent conversation"></a>
+        <figcaption><em>Morning Ritual</em><span>Editing walkthrough</span></figcaption>
+      </figure>
+    </section>
+
+    <section class="shell section" id="technical" aria-labelledby="technical-title">
+      <div class="section-head"><div><h2 id="technical-title">How Thinkut finds footage</h2><p class="section-intro">Captions and transcripts carry source timestamps, so a search result can point to a moment inside a clip.</p></div><a class="section-link" href="#captions">Explore source evidence <span aria-hidden="true">↓</span></a></div>
+      <div class="model-layout">
+        <div class="model-list" aria-label="Choose a model">
+          <button type="button" data-model="vision" aria-pressed="true"><strong>Visual understanding</strong><small>Describe visible actions</small></button>
+          <button type="button" data-model="speech" aria-pressed="false"><strong>Speech recognition</strong><small>Timestamp speech segments</small></button>
+          <button type="button" data-model="text" aria-pressed="false"><strong>Semantic text search</strong><small>Find related captions and transcripts</small></button>
+          <button type="button" data-model="image" aria-pressed="false"><strong>Image–text retrieval</strong><small>Rank frames from a text query</small></button>
+        </div>
+        <div class="model-detail" aria-live="polite">
+          <div class="pane-label">INFERENCE <span id="model-runtime">Local · on demand</span></div>
+          <div class="model-body"><h3 id="model-title">Describe sampled frames</h3><p id="model-note">Visual observations help review complex actions and supplement the searchable index.</p>
+            <div class="model-pipe" aria-label="Model data flow"><div><small>INPUT</small><span id="model-input">Sampled source frames</span></div><span aria-hidden="true">→</span><div><small>PROCESS</small><span id="model-process">Visual captioning</span></div><span aria-hidden="true">→</span><div><small>OUTPUT</small><span id="model-output">Observations with source ranges</span></div></div>
+            <p class="model-constraint" id="model-constraint">Sampled observations cover the frames seen. Review a candidate against the source before choosing a cut.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="shell section architecture" id="agent-design" aria-labelledby="architecture-title">
+      <div class="section-head">
+        <div><h2 id="architecture-title">How the Agent edits</h2><p class="section-intro">The Agent gathers evidence and proposes commands. The desktop editor applies them and returns the updated sequence.</p></div>
+        <div class="architecture-scenarios" role="group" aria-label="Example editing task">
+          <button type="button" data-architecture-case="draft" aria-pressed="true" aria-controls="architecture-detail">Build a draft</button>
+          <button type="button" data-architecture-case="revise" aria-pressed="false" aria-controls="architecture-detail">Revise a clip</button>
+        </div>
+      </div>
+      <div class="architecture-map">
+        <p class="architecture-request"><span>User request</span><q id="architecture-request">Cut a 21-second coffee film, from beans to the finished cup.</q></p>
+        <ol class="architecture-stages" aria-label="Editing workflow">
+          <li><button type="button" data-architecture-stage="context" aria-pressed="true" aria-controls="architecture-detail"><small>Project context</small><strong>Gather evidence</strong><span>Source ranges + current timeline</span></button></li>
+          <li><button type="button" data-architecture-stage="plan" aria-pressed="false" aria-controls="architecture-detail"><small>Agent runtime</small><strong>Plan the edit</strong><span>Evidence → typed commands</span></button></li>
+          <li><button type="button" data-architecture-stage="apply" aria-pressed="false" aria-controls="architecture-detail"><small>Desktop editor</small><strong>Validate and apply</strong><span>Scope + sequence revision</span></button></li>
+          <li><button type="button" data-architecture-stage="check" aria-pressed="false" aria-controls="architecture-detail"><small>Tool results</small><strong>Verify the cut</strong><span>Updated sequence + preview</span></button></li>
+        </ol>
+        <div class="architecture-loop"><span aria-hidden="true">↶</span> The next request starts from the updated timeline</div>
+        <div class="architecture-detail" id="architecture-detail" aria-live="polite" aria-atomic="true">
+          <div class="architecture-explanation">
+            <h3 id="architecture-detail-title">Retrieve candidates with source time</h3>
+            <p id="architecture-detail-copy">Search the project index for likely shots, inspect source frames if allowed, and read the current sequence before placing clips.</p>
+            <ul id="architecture-tools" class="architecture-tools" aria-label="Thinkut tools and commands"><li><code>search_assets</code></li><li><code>request_source_frames</code></li><li><code>read_editing_state</code></li></ul>
+          </div>
+          <div class="architecture-example"><dl id="architecture-example"><div><dt>Source select</dt><dd>C0047.MP4 · 2.7–5.7s</dd></div><div><dt>Timeline state</dt><dd>V1 is empty</dd></div></dl><a class="section-link" href="#captions-tamp">Compare the tamp ranges <span aria-hidden="true">↓</span></a></div>
+        </div>
+      </div>
+      <div class="trace" id="agent-playground">
+        <div class="section-head"><div><h2>Try an Agent edit</h2><p>Start with <strong>Add the tamp shot</strong>, apply the edit, then try <strong>Trim the lead-in</strong>.</p></div><button id="agent-reset" class="trace-replay" type="button">Reset session</button></div>
+        <div class="trace-grid">
+          <div class="trace-monitor">
+            <div class="pane-label"><span id="trace-monitor-label">SOURCE MONITOR</span><span id="trace-monitor-time">Select a clip</span></div>
+            <div class="trace-picture"><img id="trace-image" src="assets/evidence-tamp-1.jpg" alt="Coffee preparation preview"><video id="trace-video" hidden muted playsinline preload="none" aria-label="Source or timeline clip preview"></video></div>
+            <div class="source-trim" id="agent-source-range" hidden>
+              <div class="source-trim-ruler"><span id="agent-trim-span"></span></div>
+              <div class="source-trim-labels"><span>0s</span><b id="agent-trim-label"></b><span id="agent-source-duration"></span></div>
+            </div>
+            <div class="agent-timeline-head"><b>Timeline</b><span id="agent-revision">Revision 1</span></div>
+            <div class="trace-track"><span>V1</span><div class="trace-track-rail" id="agent-track"><span class="agent-empty">No clips yet</span><div class="trace-playhead" id="trace-playhead" hidden></div></div></div>
+            <div class="agent-ticks" aria-hidden="true"><span>0s</span><span>6s</span><span>12s</span><span>18s</span><span>24s</span></div>
+          </div>
+          <div class="trace-data">
+            <div class="pane-label">EDIT SESSION <span>Browser sandbox</span></div>
+            <div id="agent-thread" class="agent-thread" role="log" aria-label="Agent conversation">
+              <p class="agent-intro">Search this project or place a source range on V1.</p>
+            </div>
+            <div id="agent-approval" class="agent-approval" hidden><p id="agent-proposal"></p><button type="button" id="agent-apply">Apply edit</button><button type="button" id="agent-cancel">Cancel</button></div>
+            <div class="agent-suggestions">
+              <button type="button" data-agent-prompt="Place 2.7–5.7s of the tamp at 6s on V1.">Add the tamp shot</button>
+              <button type="button" data-agent-prompt="Find a milk pour.">Find a milk pour</button>
+              <button type="button" data-agent-prompt="Trim the lead-in to 2.2s." id="agent-trim-example" hidden>Trim the lead-in</button>
+            </div>
+            <form id="agent-form" class="agent-form">
+              <input id="agent-prompt" aria-label="Message to Agent" placeholder="Find a shot or request a timeline edit…" maxlength="180" autocomplete="off" required>
+              <button type="submit">Send</button>
+            </form>
+          </div>
+        </div>
+        <p class="annotation">The browser sandbox matches keywords against curated captions and applies place and trim commands to its own V1 timeline.</p>
+      </div>
+    </section>
+
+    <details class="shell evidence-details" id="captions">
+      <summary>Explore source evidence <span>8 sample files</span></summary>
+      <div class="evidence">
+        <aside class="library"><div class="pane-label">PROJECT LIBRARY <span>8 FILES</span></div><div id="asset-list" aria-label="Select a source clip"></div></aside>
+        <div class="inspector"><div class="pane-label">SOURCE MONITOR <span id="source-name"></span></div><video id="source-video" controls playsinline preload="metadata" aria-label="Source footage monitor"></video><div id="source-selection" class="source-selection"></div><div id="segments" class="segments" aria-live="polite"></div><div class="status-line"><span>Curated captions with approximate source times.</span></div></div>
+      </div>
+    </details>
+
+    <section class="section block" id="workflow" aria-labelledby="workflow-title">
+      <div class="shell">
+        <div class="section-head"><h2 id="workflow-title">Workflow demo</h2><p><em>Morning Ritual</em> follows an espresso from beans to cup. The walkthrough shows how seven excerpts are chosen from eight files, then revises one shot on request.</p></div>
+        <div class="screen"><video id="workflow-video" controls playsinline preload="metadata" poster="assets/workflow-poster.jpg?v=10" aria-label="Thinkut end-to-end editing demonstration"><source src="assets/thinkut-workflow.mp4?v=10" type="video/mp4"></video></div>
+        <div class="chapters" aria-label="Workflow chapters">
+          <button type="button" data-time="0" aria-current="step"><small>00:00</small>Brief</button>
+          <button type="button" data-time="5"><small>00:05</small>Import</button>
+          <button type="button" data-time="6.8"><small>00:06</small>Understand</button>
+          <button type="button" data-time="17.6"><small>00:17</small>Agent edit</button>
+          <button type="button" data-time="34"><small>00:34</small>Refine edit</button>
+          <button type="button" data-time="47"><small>00:47</small>Final cut</button>
+        </div>
+        <div class="demo-note"><p class="annotation">Scripted walkthrough with curated captions and condensed timing.</p><a id="film" href="assets/morning-ritual-revised.mp4?v=10">Watch the 20-second final cut ↗</a></div>
+      </div>
+    </section>
+  </main>
+  <footer class="shell footer"><a href="#top" class="brand"><img src="assets/mark.svg" width="26" height="26" alt="">Thinkut</a><p>Project page by Peiyuan He</p><a href="#top" class="top-link">Back to top ↑</a></footer>
+</body>
+</html>
